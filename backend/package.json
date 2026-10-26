@@ -1,0 +1,21 @@
+{
+  "name": "incident-hub-api",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check src/app.js && node --check src/server.js && node --check src/routes/incidents.routes.js && node --check src/routes/auth.routes.js && node --check src/routes/users.routes.js && node --check src/routes/categories.routes.js && node --check src/routes/dashboard.routes.js",
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.3",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.7"
+  }
+}

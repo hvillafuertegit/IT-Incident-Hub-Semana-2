@@ -1,0 +1,72 @@
+stages:
+  - validate
+  - test
+  - security
+  - build
+  - package
+
+variables:
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+
+cache:
+  paths:
+    - .npm/
+
+backend-validation:
+  image: node:22-alpine
+  stage: validate
+  script:
+    - cd backend
+    - npm install
+    - npm run check
+
+backend-tests:
+  image: node:22-alpine
+  stage: test
+  script:
+    - cd backend
+    - npm install
+    - npm test
+
+security-audit:
+  image: node:22-alpine
+  stage: security
+  script:
+    - cd backend
+    - npm install
+    - npm audit --omit=dev --audit-level=high
+    - cd ../frontend
+    - npm install
+    - npm audit --audit-level=high
+
+frontend-build:
+  image: node:22-alpine
+  stage: build
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 7 days
+
+source-package:
+  image: alpine:latest
+  stage: package
+  script:
+    - tar -czf "it-incident-hub-${CI_COMMIT_SHORT_SHA}.tar.gz" backend/src backend/tests backend/package.json frontend/src frontend/index.html frontend/package.json database docs README.md
+  artifacts:
+    paths:
+      - "it-incident-hub-*.tar.gz"
+    expire_in: 7 days
+
+self-hosted-check:
+  stage: validate
+  tags:
+    - local-windows
+  rules:
+    - if: '$RUN_SELF_HOSTED == "true"'
+  script:
+    - node --version
+    - npm --version

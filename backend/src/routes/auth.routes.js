@@ -1,0 +1,11 @@
+import {Router} from 'express';
+import {pool} from '../db.js';
+import {safe} from '../middleware/errors.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import {auth} from '../middleware/auth.js';
+const secret=()=>process.env.JWT_SECRET;
+const router=Router();
+router.post('/login',safe(async(req,res)=>{const {email,password}=req.body; if(!email||!password)return res.status(400).json({error:'Completa correo y contraseña'});const {rows}=await pool.query('SELECT id,name,email,role,password_hash FROM users WHERE email=$1',[email]);const user=rows[0];if(!user||!await bcrypt.compare(password,user.password_hash))return res.status(401).json({error:'Credenciales incorrectas'});const token=jwt.sign({id:user.id,role:user.role,name:user.name},secret(),{expiresIn:'8h'});res.json({token,user:{id:user.id,name:user.name,email:user.email,role:user.role}})}));
+router.get('/me',auth,(req,res)=>res.json(req.user));
+export default router;

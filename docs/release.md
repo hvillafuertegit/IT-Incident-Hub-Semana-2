@@ -1,0 +1,2 @@
+# Estrategia de release
+Ambientes: desarrollo local, validación mediante GitHub Actions y GitLab CI/CD, y release etiquetado. Convención SemVer: `v0.1.0` → `v0.2.0` → `v1.0.0`. Antes de etiquetar: PR revisados, build, pruebas, análisis de dependencias, verificación manual de API y aprobación registrada. Guardar artefacto generado por GitLab. `main` protegido; no guardar secretos en el repositorio.
